@@ -3,11 +3,13 @@ use std::sync::Arc;
 use teloxide::{prelude::*, utils::command::BotCommand};
 
 use crate::database::Datastore;
+use crate::scheduler::Scheduler;
 
 mod database;
 mod client_message;
 mod handler;
 mod weather_settings;
+mod scheduler;
 
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
@@ -37,7 +39,8 @@ async fn run() {
     let bot = Bot::from_env();
      let handler = Arc::new(handler::message_handler);
 
-    Dispatcher::new(bot)
+    let mut scheduler = Scheduler::new(datastore.clone());
+    let dispatcher = Dispatcher::new(bot)
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
             rx.for_each_concurrent(None, move |message| {
                 let handler = handler.clone();
@@ -46,7 +49,9 @@ async fn run() {
                     handler(message, database).await.log_on_error().await;
                 }
             })
-        }).dispatch().await
+        });
+
+    tokio::join!(dispatcher.dispatch(), scheduler.run());
 }
 
 
