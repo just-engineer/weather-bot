@@ -1,0 +1,23 @@
+[package]
+name = "weather-bot"
+version = "0.1.0"
+authors = ["Dan <danila.klenin@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+log = "0.4.8"
+pretty_env_logger = "0.4.0"
+
+tokio = { version = "0.2.11", features = ["rt-threaded", "macros"] }
+
+teloxide = { version = "0.3.0" }
+teloxide-macros = "0.3.0"
+
+mongodb = { version = "1.1.1", default-features = true }
+#avocado = "0.6.0"
+serde = "1.0.117"
+
+typed-builder = "0.7.0"
+chrono = "0.4"
